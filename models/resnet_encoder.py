@@ -55,8 +55,15 @@ def resnet_multiimage_input(num_layers, pretrained=False, num_input_images=1):
         block_type, blocks, num_input_images=num_input_images)
 
     if pretrained:
+        model_urls = {
+            'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',
+            'resnet34': 'https://download.pytorch.org/models/resnet34-333f7ec4.pth',
+            'resnet50': 'https://download.pytorch.org/models/resnet50-19c8e357.pth',
+            'resnet101': 'https://download.pytorch.org/models/resnet101-5d3b4d8f.pth',
+            'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
+        }
         loaded = torch.hub.load_state_dict_from_url(
-            models.resnet.model_urls['resnet{}'.format(num_layers)])
+            model_urls['resnet{}'.format(num_layers)])
         loaded['conv1.weight'] = torch.cat(
             [loaded['conv1.weight']] * num_input_images, 1) / num_input_images
         model.load_state_dict(loaded)

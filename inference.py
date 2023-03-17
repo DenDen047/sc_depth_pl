@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 import torch
-from imageio import imread, imwrite
+from imageio.v3 import imread, imwrite
 from path import Path
 import os
 
@@ -30,7 +30,7 @@ def main():
     system = system.load_from_checkpoint(hparams.ckpt_path, strict=False)
 
     model = system.depth_net
-    model.cuda()
+    # model.cuda()
     model.eval()
 
     # training size
@@ -55,7 +55,7 @@ def main():
         (output_dir/'depth').makedirs_p()
 
     image_files = sum([(input_dir).files('*.{}'.format(ext))
-                      for ext in ['jpg', 'png']], [])
+                      for ext in ['jpg', 'png', 'jpeg']], [])
     image_files = sorted(image_files)
 
     print('{} images for inference'.format(len(image_files)))
@@ -65,7 +65,7 @@ def main():
         filename = os.path.splitext(os.path.basename(img_file))[0]
 
         img = imread(img_file).astype(np.float32)
-        tensor_img = inference_transform([img])[0][0].unsqueeze(0).cuda()
+        tensor_img = inference_transform([img])[0][0].unsqueeze(0)  # .cuda()
         pred_depth = model(tensor_img)
 
         if hparams.save_vis:
